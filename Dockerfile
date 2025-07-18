@@ -15,6 +15,7 @@ RUN dnf update -y && \
     tar \
     gzip \
     ca-certificates \
+    jq \
     && dnf clean all
 
 # Install octosql
