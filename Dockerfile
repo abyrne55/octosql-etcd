@@ -1,22 +1,21 @@
 # Generated-By: GPT-4.1
 
-# Use Red Hat UBI 10 as base image
-FROM registry.access.redhat.com/ubi10/ubi:latest
+# Use Red Hat UBI 10 minimal as base image
+FROM registry.access.redhat.com/ubi10/ubi-minimal:latest
 
 # Set labels for the image
-LABEL maintainer="etcd-sre-tools"
-LABEL description="Red Hat UBI 10 with octosql installed"
+LABEL maintainer="octosql-etcd"
+LABEL description="RHEL UBI 10 with octosql and etcdsnapshot-plugin installed"
 
 # Update system packages and install required dependencies
-RUN dnf update -y && \
-    dnf install -y \
+RUN microdnf update -y && \
+    microdnf install -y \
     curl \
-    wget \
     tar \
     gzip \
     ca-certificates \
     jq \
-    && dnf clean all
+    && microdnf clean all
 
 # Install octosql
 # Download and install the latest version of octosql
@@ -37,6 +36,9 @@ RUN octosql plugin repository add https://raw.githubusercontent.com/tjungblu/oct
 
 # Verify installation
 RUN octosql --version
+
+# Disable octosql telemetry and give users a signal that they're in a container
+ENV OCTOSQL_NO_TELEMETRY=1 AM_I_CONTAINER=yes
 
 # Set the default command to shell
 CMD ["/bin/bash"] 
